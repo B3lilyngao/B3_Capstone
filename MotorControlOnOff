@@ -1,0 +1,19 @@
+int motorPin = 3;
+int val = LOW;
+
+void setup() {
+  pinMode(motorPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  Serial.println(val);
+  digitalWrite(motorPin, val);
+  if (val == LOW){
+    val = HIGH;
+  }
+  else{
+    val = LOW;
+  }
+  delay(5000);
+}
