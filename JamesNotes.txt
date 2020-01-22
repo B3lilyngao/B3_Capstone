@@ -1,0 +1,16 @@
+I updated the code to include some more things with the antennas and moving backwards based on our 1/21 convo.
+I also left notes for areas where the sensor information will be worked out, each starting with "* Parshva".
+I have yet to update or touch the GUI again.
+I also intend on uploading this to GitHub ASAP, possibly today.
+Right now, every message is 8-bit, with a 2-bit header, so there's only 6-bits of info. This can be increased whenever/ if ever we need.
+ - James 1/22/20
+
+-------------------------------
+
+In all of the code files, need to work on how to implement the antennas and encoding. 
+I am unsure how excately we will be sending data and what receiving that will look like, so every part of the code with that included is very vague/incomplete.
+I also have yet to fully fledge out how exactly we are expecting the temperature sensor data to look when it gets to the client contolling the robot, as we don't have sensors yet and the above.
+All comments with * are highlighting what is wrong.
+The GUI programming of this all can come later. All I've worked on since the initial GUI is the arduino codes.
+Also moving backwards -- we can achieve that possibly by reversing 2 of the wheels so they are facing backwards, and just turning the back wheels to move backwards and front wheels to move forward (like a two-wheel-drive setup)
+ - James 1/20/20
