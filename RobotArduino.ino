@@ -15,6 +15,7 @@ int frontRight(2), frontLeft(3), backRight(4), backLeft(5); // Wheels
 int Rx(11), Tx(12); // Antennas
 char pastMoves[20]; // Assuming a maximum of 20 moves stored
 int pastMoveCount = 0;
+unsigned long startTime; // Timeout timer variable, to be set in the performAction function
 
 void setup()
 {
@@ -36,10 +37,23 @@ void loop()
       performAction();
     }
   }
+  bool ACK = 0;
+  while (!checkTimeout(startTime) && !ACK){
+    if (digitalRead(Rx)) {
+      clockTick();
+      if (digitalRead(Rx)){
+        ACK = 1;
+      }
+    }
+  }
+  if (checkTimeout(startTime) && !ACK){
+    Escape();
+  }
 }
 
 // performAction - Reads the incoming message and performs the necessary action
 void performAction(){
+  startTime = millis();
   String RxMessage = "";
   for (int i = 0; i < 6; i++){
     RxMessage += digitalRead(Rx);
@@ -70,7 +84,7 @@ void moveForward(){
   digitalWrite(frontRight, HIGH);
   digitalWrite(frontLeft, HIGH);
   
-  clockTick();
+  delay(1000);
   digitalWrite(frontRight, LOW);
   digitalWrite(frontLeft, LOW);
   
@@ -84,7 +98,7 @@ void  moveBack(){
   digitalWrite(backRight, HIGH);
   digitalWrite(backLeft, HIGH);
   
-  clockTick();
+  delay(1000);
   digitalWrite(backRight, LOW);
   digitalWrite(backLeft, LOW);
   
@@ -98,7 +112,7 @@ void turnLeft (){
   digitalWrite(frontRight, HIGH);
   digitalWrite(backLeft, HIGH);
 
-  clockTick();
+  delay(1000);
   digitalWrite(frontRight, LOW);
   digitalWrite(backLeft, LOW);
   
@@ -112,7 +126,7 @@ void turnRight (){
   digitalWrite(frontLeft, HIGH);
   digitalWrite(backRight, HIGH);
 
-  clockTick();
+  delay(1000);
   digitalWrite(frontLeft, LOW);
   digitalWrite(backRight, LOW);
 
@@ -139,6 +153,7 @@ void Escape(){
          turnRight();
          break;
     }
+    // *To Add - Pause, then if NoACK, Continue
   }
   pastMoveCount = 0;
 }
@@ -148,20 +163,31 @@ void sendDistance(){
   // *Parshva - Use this area to send sensor data as a single 6-bit block to return 
   // Implementing how I have this far (which we can change, of course), requires you to:
   // 1 Get sensor data
-  // 2 Make a 6-bit block out of it (e.g. 100101)
+  // 2 Make a 6-bit block out of it for each of 5 sensors (e.g. 100101)
   // 3 Iterate on that that through the for-loop below
-  // We may need to increase this size to accurately send data, which just requires going through all of the code to make a uniform change
-  digitalWrite(Tx, 1);
-  clockTick();
-  digitalWrite(Tx, 1);
-  clockTick();
-  for (int i = 0; i < 6; i++){
-    digitalWrite(Tx, 0); // Replace this 0 with the location of the bit at hand
+  // There's probably a more graceful and abstracted way of achieving this, but I have yet to think of it.
+  for (int i = 0; i < 5; i++){
+    digitalWrite(Tx, 1);
     clockTick();
+    digitalWrite(Tx, 1);
+    clockTick();
+    for (int i = 0; i < 6; i++){
+      digitalWrite(Tx, 0); // Incrementally write data for sensor 1, 2, 3, etc...
+      clockTick();
+    }
   }
 }
 
 // clockTick - One tick of the clock, the decided-upon duration between the transmission of bits
 void clockTick(){
-  delay(1000);
+  delay(1); //1 ms
+}
+
+// checkTimeout - Check to see if, based on the time the message was sent, it has timed out before sending another message
+bool checkTimeout(unsigned long startTime){
+  unsigned long currTime = millis();
+  if (currTime - startTime < 30000){ // Timeout of 30 seconds
+    return true;
+  }
+  else return false; // When robot times out, it will escape
 }

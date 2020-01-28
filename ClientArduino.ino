@@ -49,16 +49,18 @@ void loop() {
       case ('t'):
         transmitSignal("11110000"); // 110
     }
-    unsigned long startTime = millis();
-    while (checkTimeout(startTime)){
+    int distancesReceived = 0;
+    while (distancesReceived < 5){ // Waiting for 5 different sensor values
       if (digitalRead(Rx)){
         clockTick();
-        if (digitalRead(Rx)){ // if receive header of 11
+        if (digitalRead(Rx)){ // If receive header of 11
             clockTick();
-            displaySensorData(); // read rest of 11xxxxxx message
+            displaySensorData(); // Read rest of 11xxxxxx message
+            distancesReceived++;
         }
       }
     }
+    transmitSignal("11"); // Sends ACK to robot to acknowledge having gotten the distances
   }
 }
 
@@ -80,14 +82,14 @@ void displaySensorData(){
 
 // clockTick - One tick of the clock, the decided-upon duration between the transmission of bits
 void clockTick(){
-  delay(1000);
+  delay(1); //1 ms
 }
 
 // checkTimeout - Check to see if, based on the time the message was sent, it has timed out before sending another message
-bool checkTimeout(unsigned long startTime){
+/*bool checkTimeout(unsigned long startTime){
   unsigned long currTime = millis();
   if (currTime - startTime < 30000){ // Timeout of 30 seconds
     return true;
   }
   else return false; // *What happens when it times out?
-}
+}*/
