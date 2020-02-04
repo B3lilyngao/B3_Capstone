@@ -180,7 +180,7 @@ void sendDistance(){
 
 // clockTick - One tick of the clock, the decided-upon duration between the transmission of bits
 void clockTick(){
-  delay(1); //1 ms
+  delay(10); //10 ms
 }
 
 // checkTimeout - Check to see if, based on the time the message was sent, it has timed out before sending another message

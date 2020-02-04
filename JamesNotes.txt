@@ -1,4 +1,5 @@
 To Do/To Look At:
+- How will sending signals to the wheels work with the bridges attached? I.e. need to switch to 4 wheel drive
 - Make escape incremental (pausing each stage to see if robot is in range of client)
 - Work on encoding redundancy of robot (send 4 1 bits for every 1)
 - Making transmission more elegant, abstract out into one function
