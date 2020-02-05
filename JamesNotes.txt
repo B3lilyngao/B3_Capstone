@@ -1,0 +1,34 @@
+To Do/To Look At:
+- How will sending signals to the wheels work with the bridges attached? I.e. need to switch to 4 wheel drive
+- Make escape incremental (pausing each stage to see if robot is in range of client)
+- Work on encoding redundancy of robot (send 4 1 bits for every 1)
+- Making transmission more elegant, abstract out into one function
+- Sensor information (in conjunction with Parshva)
+
+-------------------------------
+
+- Decreased the clock time to 1ms, rather than the absurdly slow 1s
+- Made the robot send/client wait for 5 sensor values
+- Moved the timeout side to the robot, where if it times out (i.e. doesn't get an ACK from the client after sending distances, it begins to escape)
+- Thinking about it, the client shouldn't need timeout, as while it's waiting for distance commands, if it receives none due to robot out of distance, then it'll assume robot is escaping
+- Been thinking about convo with Lilyn, code is getting big and when the time comes will need a lot of debugging, maybe should plan on switching over to making tests to incrementally get robot functionality up to this*
+ -- James 1/27/20
+
+-------------------------------
+
+- I updated the code to include some more things with the antennas and moving backwards based on our 1/21 convo.
+- I also left notes for areas where the sensor information will be worked out, each starting with "* Parshva".
+- I have yet to update or touch the GUI again.
+- I also intend on uploading this to GitHub ASAP, possibly today.
+- Right now, every message is 8-bit, with a 2-bit header, so there's only 6-bits of info. This can be increased whenever/ if ever we need.
+ -- James 1/22/20
+
+-------------------------------
+
+- In all of the code files, need to work on how to implement the antennas and encoding. 
+- I am unsure how excately we will be sending data and what receiving that will look like, so every part of the code with that included is very vague/incomplete.
+- I also have yet to fully fledge out how exactly we are expecting the temperature sensor data to look when it gets to the client contolling the robot, as we don't have sensors yet and the above.
+- All comments with * are highlighting what is wrong.
+- The GUI programming of this all can come later. All I've worked on since the initial GUI is the arduino codes.
+- Also moving backwards -- we can achieve that possibly by reversing 2 of the wheels so they are facing backwards, and just turning the back wheels to move backwards and front wheels to move forward (like a two-wheel-drive setup)
+ -- James 1/20/20

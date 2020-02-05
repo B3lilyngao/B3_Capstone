@@ -1,0 +1,70 @@
+ClientGUI.pde
+	Setup
+		Set up GUI background
+		Connect to Arduino Serial Port
+		Add buttons (Forward, Backward, Left, Right, Emergency)
+	Draw
+		Background
+		Sensor UI based on SensorRead
+	Forward
+		Write Forward to Serial Port
+	Backward
+		Write Backward to Serial Port
+	Left
+		Write Left to Serial Port
+	Right
+		Write Right to Serial Port
+	Escape
+		Write Escape to Serial Port
+	SensorRead
+		Read sensor values from Serial Port
+
+------------------------------------------------------------------
+
+ClientArduino.ino
+	Read from Serial Port
+		If Forward, transmit 1100100 via antenna
+		If Backward, transmit 1101000 via antenna
+		If Left, transmit 1101100 via antenna
+		If Right, transmit 1110000 via antenna
+		If Escape, transmit 1111000 via antenna
+		If Measure Distance, transmit 1111100 via antenna
+	Start timeout after transmission
+	Sense for header (11) and read the 5 bits following that
+	If receive sensor data via antenna before timeout
+		Write to Serial Port
+	Else if don't receive sensor data before timeout
+		??
+
+------------------------------------------------------------------
+
+RobotArduino.ino
+	Sense for header (11) and read the 3 bits following that
+	Read from Antenna
+	If Forward
+		Move Forward
+		Save move invese to moves list
+		Increment moves counter
+		Send distance data via antenna, 11xxxxx
+	If Backward
+		Move Backward
+		Save move invese to moves list
+		Increment moves counter
+		Send distance data via antenna, 11xxxxx
+	If Left
+		Move Left
+		Save move invese to moves list
+		Increment moves counter
+		Send distance data via antenna, 11xxxxx
+	If Right
+		Move Right
+		Save move invese to moves list
+		Increment moves counter
+		Send distance data via antenna, 11xxxxx
+	If Escape
+		Iterate backward through moves list
+		Reset moves counter
+		Send distance data via antenna
+	If Measure Distance
+		Measure distance
+		Send distance data via antenna, 11xxxxx
