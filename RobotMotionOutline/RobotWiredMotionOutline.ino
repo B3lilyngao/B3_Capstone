@@ -6,7 +6,8 @@ int frontRightF(2), frontLeftF(4), backRightF(6), backLeftF(8); // Pins to move 
 int frontRightB(3), frontLeftB(5), backRightB(7), backLeftB(9); // Pins to move wheels backward
 char pastMoves[500]; // Array to save the past moves for the Escape functionality
 int moveCounter = 0;
-//int Rx(11), Tx(12); // Antennas
+//int Rx(11); // Rx Antenna
+// int Tx(12); // Tx antenna
 
 void setup()
 {
