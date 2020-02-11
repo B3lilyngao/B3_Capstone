@@ -2,7 +2,7 @@
 // These serial port commands are to be later replaced with wireless signals received
 
 char a;
-int frontRightF(2), frontLeftF(4), backRightF(5), backLeftF(8); // Pins to move wheels forward
+int frontRightF(2), frontLeftF(4), backRightF(6), backLeftF(8); // Pins to move wheels forward
 int frontRightB(3), frontLeftB(5), backRightB(7), backLeftB(9); // Pins to move wheels backward
 char pastMoves[500]; // Array to save the past moves for the Escape functionality
 int moveCounter = 0;
@@ -50,7 +50,6 @@ void loop()
         incrementEscape();
         break;
     }
-    delay(1000);
     stopWheels();
     pastMoves[moveCounter] = a;
     moveCounter++;
@@ -63,6 +62,7 @@ void moveForward(){
   digitalWrite(frontLeftF, HIGH);
   digitalWrite(backRightF, HIGH);
   digitalWrite(backLeftF, HIGH);
+  delay(200);
 }
 
 // moveBackward - Moves the robot backward
@@ -71,6 +71,7 @@ void moveBackward(){
   digitalWrite(frontLeftB, HIGH);
   digitalWrite(backRightB, HIGH);
   digitalWrite(backLeftB, HIGH);
+  delay(200);
 }
 
 // turnLeft - Turns the robot left
@@ -79,7 +80,9 @@ void turnLeft(){
   digitalWrite(backRightF, HIGH);
   digitalWrite(frontLeftB, HIGH);
   digitalWrite(backLeftB, HIGH);
+  delay(135);
 }
+
 
 // turnRight - Turns the robot right
 void turnRight(){
@@ -87,13 +90,14 @@ void turnRight(){
   digitalWrite(backLeftF, HIGH);
   digitalWrite(frontRightB, HIGH);
   digitalWrite(backRightB, HIGH);
+  delay(135);
 }
 
 // incrementEscape - Iterated the robot backwards through the inverse of its past moves
 // Currently, just escapes straight out to the beginning
 // When wireless communication is incorporated, this ideally send distance back after each move and pause
 void incrementEscape(){
-  for (int i = moveCounter; i > 0; i--){// Iterates for every move saved in the pastMoves array
+  for (int i = moveCounter; i >= 0; i--){// Iterates for every move saved in the pastMoves array
     char escapeMove = pastMoves[i];
     switch(escapeMove){
       case('f'):
@@ -109,8 +113,8 @@ void incrementEscape(){
         turnRight();
         break;
     }
-    delay(1000);
     stopWheels();
+    delay(200);
     moveCounter--;
   }
 }
