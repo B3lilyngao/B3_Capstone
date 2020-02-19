@@ -1,29 +1,3 @@
-
-Skip to content
-Pull requests
-Issues
-Marketplace
-Explore
-@marcusjrob
-B3lilyngao /
-B3_Capstone
-
-0
-2
-
-    4
-
-Code
-Issues 0
-Pull requests 1
-Actions
-Projects 0
-Wiki
-Security
-Insights
-B3_Capstone/ClientArduino.ino
-@jamelyod jamelyod Made Minor Change to Clock Speed 4f45344 15 days ago
-95 lines (83 sloc) 2.84 KB
 // If written by GUI in serial:
 // "f" move forward, i.e. send 11-001-000
 // "b" move backward, i.e. send 11-010-000
@@ -35,7 +9,9 @@ B3_Capstone/ClientArduino.ino
 // Write to serial the distance sensor values
 
 // All transmissions are 8-bit, starting with header 11, to be 11xxxxxx
-
+const int TxPeriod = 10;
+const int headerLength = 8;
+bool header[headerLength] = {1,0,1,1,0,0,1,0};
 char a; // Serial read value
 int Rx(11), Tx(12); // Antennas
 
@@ -44,93 +20,49 @@ void setup() {
   Serial.begin(9600);
   pinMode(Rx, INPUT); // Rx pin
   pinMode(Tx, OUTPUT); // Tx pin
-
+  pinMode(LED_BUILTIN, OUTPUT);
+  int  a =1;
 }
 
 void loop() {
   while (Serial.available()){
-    a = Serial.read(); // Read incoming character
-
+    char a = Serial.read(); // Read incoming character
+    
     switch (a) { // Based on GUI input, transmit signal to robot
-      case ('f'):
-        transmitSignal("11001000"); // 001
-        displaySensorData();
+      case ('A'):
+        transmitSignal("001000"); // 001
         break;
-      case ('b'):
-        transmitSignal("11010000"); // 010
-        displaySensorData();
+      case ('B'):
+        transmitSignal("010000"); // 010
         break;
-      case ('l'):
-        transmitSignal("11011000"); // 011
-        displaySensorData();
+      case ('C'):
+        transmitSignal("011000"); // 011
         break;
-      case ('r'):
-        transmitSignal("11100000"); // 100
-        displaySensorData();
+      case ('D'):
+        transmitSignal("100000"); // 100
         break;
-      case ('e'):
-        transmitSignal("11101000"); // 101
-        displaySensorData();
+      case ('E'):
+        transmitSignal("101000"); // 101
         break;
-      case ('t'):
-        transmitSignal("11110000"); // 110
+      case ('F'):
+        transmitSignal("110000"); // 110
     }
-    int distancesReceived = 0;
-    while (distancesReceived < 5){ // Waiting for 5 different sensor values
-      if (digitalRead(Rx)){
-        clockTick();
-        if (digitalRead(Rx)){ // If receive header of 11
-            clockTick();
-            displaySensorData(); // Read rest of 11xxxxxx message
-            distancesReceived++;
-        }
-      }
-    }
-    transmitSignal("11"); // Sends ACK to robot to acknowledge having gotten the distances
   }
 }
 
 // transmitSignal -- Transmits signal (sig) to robot
 void transmitSignal(String sig){
+  for(int i = 0; i < headerLength; i++){
+    digitalWrite(Tx, header[i]);
+    digitalWrite(LED_BUILTIN, header[i]);
+    delay(TxPeriod);
+    }
   for (int i = 0; i < sig.length(); i++){
-    digitalWrite(Tx, sig.charAt(i)); // Iterate through the signified message and transmit each digit
-    clockTick();
+    int b = sig[i];
+    b-=48;
+    Serial.print(b);
+    digitalWrite(Tx, b); // Iterate through the signified message and transmit each digit
+    digitalWrite(LED_BUILTIN, b);
+    delay(TxPeriod);
   }
 }
-
-// displaySensorData - Reads sensor data returned from robot and prints it to serial
-void displaySensorData(){
-  for (int i = 0; i < 6; i++){
-    Serial.write(digitalRead(Rx)); // Write digits of sensor values to Serial Port, to be parsed by the GUI
-    clockTick();
-  }
-}
-
-// clockTick - One tick of the clock, the decided-upon duration between the transmission of bits
-void clockTick(){
-  delay(10); //10 ms
-}
-
-// checkTimeout - Check to see if, based on the time the message was sent, it has timed out before sending another message
-/*bool checkTimeout(unsigned long startTime){
-  unsigned long currTime = millis();
-  if (currTime - startTime < 30000){ // Timeout of 30 seconds
-    return true;
-  }
-  else return false; // *What happens when it times out?
-}*/
-
-    © 2020 GitHub, Inc.
-    Terms
-    Privacy
-    Security
-    Status
-    Help
-
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
