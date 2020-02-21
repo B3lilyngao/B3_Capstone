@@ -246,7 +246,7 @@ void sendMessage(){
   return;
 }
 
-//checkHeader - Compare recorded bits to the header
+//checkHeader - Compare recorded Rx bits to the header
 bool checkHeader(){
   for(int i = 0; i < headerLength; i++){
     if(RxSignal[i] != header[i]){
@@ -256,7 +256,7 @@ bool checkHeader(){
   return true;
 }
 
-//appendSignal - Add new to array of recorded inputs
+//appendSignal - Add new to array of recorded Rx inputs
 void appendSignal(bool RxNewBit){
   for(int i=0; i < (RxLength - 1); i++){
     RxSignal[i] = RxSignal[i+1];
@@ -265,7 +265,7 @@ void appendSignal(bool RxNewBit){
   return;
 }
 
-//Decode the integer value of the bits after the header
+//Decode the integer value of the Rx bits after the header
 int RxInteger(){
   int decimal = 0;
   for(int i = headerLength; i < RxLength; i++){
