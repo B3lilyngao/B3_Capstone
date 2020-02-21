@@ -42,7 +42,8 @@ int period = 10;
 
 
 // *Parshva - Make pins for distance sensors here
-int frontRight(2),frontRightb(3), frontLeft(4),frontLeftB(5), backRight(6),backRightb(7), backLeft(8),backLeftb(9); // Wheels
+int frontRightF(2), frontLeftF(4), backRightF(6), backLeftF(8); // Pins to move wheels forward
+int frontRightB(3), frontLeftB(5), backRightB(7), backLeftB(9); // Pins to move wheels backward
 int Rx(11), Tx(12); // Antennas
 char pastMoves[20]; // Assuming a maximum of 20 moves stored
 int pastMoveCount = 0;
@@ -52,10 +53,14 @@ void setup()
 {
  pinMode(Rx, INPUT); // Rx pin
  pinMode(Tx, OUTPUT); // Tx pin
- pinMode(frontRight, OUTPUT);
- pinMode(frontLeft, OUTPUT);
- pinMode(backRight, OUTPUT);
- pinMode(backLeft, OUTPUT);
+ pinMode(frontRightF, OUTPUT);
+ pinMode(frontLeftF, OUTPUT);
+ pinMode(backRightF, OUTPUT);
+ pinMode(backLeftF, OUTPUT);
+ pinMode(frontRightB, OUTPUT);
+ pinMode(frontLeftB, OUTPUT);
+ pinMode(backRightB, OUTPUT);
+ pinMode(backLeftB, OUTPUT);
 
  Serial.begin(9600);
 
@@ -128,16 +133,18 @@ void performAction(){
   }
   else if (RxMessage == 48){ // Send Distance
   }
+ 
+ stopWheels();
+ delay(200);
 }
 
 //moveForward - Moves the robot forward, saves move, sends distance
 void moveForward(){
-  digitalWrite(frontRight, HIGH);
-  digitalWrite(frontLeft, HIGH);
-  
-  delay(500);
-  digitalWrite(frontRight, LOW);
-  digitalWrite(frontLeft, LOW);
+  digitalWrite(frontRightF, HIGH);
+  digitalWrite(frontLeftF, HIGH);
+  digitalWrite(backRightF, HIGH);
+  digitalWrite(backLeftF, HIGH);
+  delay(200);
   
   pastMoves[pastMoveCount] = 'b';
   pastMoveCount++;
@@ -145,12 +152,11 @@ void moveForward(){
 
 //moveBack - Moves the robot backwards, saves move, sends distance
 void  moveBack(){
-  digitalWrite(backRight, HIGH);
-  digitalWrite(backLeft, HIGH);
-  
-  delay(500);
-  digitalWrite(backRight, LOW);
-  digitalWrite(backLeft, LOW);
+  digitalWrite(frontRightB, HIGH);
+  digitalWrite(frontLeftB, HIGH);
+  digitalWrite(backRightB, HIGH);
+  digitalWrite(backLeftB, HIGH);
+  delay(200);
   
   pastMoves[pastMoveCount] = 'f';
   pastMoveCount++;
@@ -158,12 +164,11 @@ void  moveBack(){
 
 //turnLeft - Turnes the robot left, saves move, sends distance
 void turnLeft (){
-  digitalWrite(frontRight, HIGH);
-  digitalWrite(backLeft, HIGH);
-
-  delay(500);
-  digitalWrite(frontRight, LOW);
-  digitalWrite(backLeft, LOW);
+  digitalWrite(frontRightF, HIGH);
+  digitalWrite(backRightF, HIGH);
+  digitalWrite(frontLeftB, HIGH);
+  digitalWrite(backLeftB, HIGH);
+  delay(135);
   
   pastMoves[pastMoveCount] = 'r';
   pastMoveCount++;
@@ -171,12 +176,11 @@ void turnLeft (){
 
 //turnRight - Turns the robot right, saves move, sends distance
 void turnRight (){
-  digitalWrite(frontLeft, HIGH);
-  digitalWrite(backRight, HIGH);
-
-  delay(100);
-  digitalWrite(frontLeft, LOW);
-  digitalWrite(backRight, LOW);
+  digitalWrite(frontLeftF, HIGH);
+  digitalWrite(backLeftF, HIGH);
+  digitalWrite(frontRightB, HIGH);
+  digitalWrite(backRightB, HIGH);
+  delay(135);
 
   pastMoves[pastMoveCount] = 'l';
   pastMoveCount++;
@@ -200,6 +204,8 @@ void Escape(){
          turnRight();
          break;
     }
+   stopWheels();
+   delay(200);
     // *To Add - Pause, then if NoACK, Continue
   }
   pastMoveCount = 0;
@@ -285,4 +291,16 @@ void PrintTx(){
       }
     Serial.print(" ");
   }
+}
+
+// stopWheels - Stops all of the wheels from moving
+void stopWheels(){
+  digitalWrite(frontRightF, LOW);
+  digitalWrite(frontLeftF, LOW);
+  digitalWrite(backRightF, LOW);
+  digitalWrite(backLeftF, LOW);
+  digitalWrite(frontRightB, LOW);
+  digitalWrite(frontLeftB, LOW);
+  digitalWrite(backRightB, LOW);
+  digitalWrite(backLeftB, LOW);
 }
