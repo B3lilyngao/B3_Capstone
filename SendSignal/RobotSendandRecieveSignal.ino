@@ -1,5 +1,4 @@
 #include <SharpIR.h>
-
 #define LS1 A0
 #define LS2 A1
 #define LS3 A2
@@ -8,7 +7,6 @@
 #define LS6 A5
 #define LS7 A6
 #define model 1080
-
 SharpIR L1(LS1, model);
 SharpIR L2(LS2, model);
 SharpIR L3(LS3, model);
@@ -17,7 +15,7 @@ SharpIR L5(LS5, model);
 SharpIR L6(LS6, model);
 SharpIR L7(LS7, model);
 
-// All Rx are 8-bit, starting with header
+// Rx signal is read after reciving the header
 const int headerLength = 8;
 bool header [headerLength] = {1,0,1,1,0,0,1,0}; 
 
@@ -39,21 +37,21 @@ int Rx(11), Tx(12);
 // Array to store previous moves so the robot can backtrack
 char pastMoves[20];
 int pastMoveCount = 0;
-// 
-unsigned long startTime; // Timeout timer variable, to be set in the performAction function
 
 void setup()
 {
  pinMode(Rx, INPUT); // Rx pin
  pinMode(Tx, OUTPUT); // Tx pin
- pinMode(frontRight, OUTPUT);
- pinMode(frontLeft, OUTPUT);
- pinMode(backRight, OUTPUT);
- pinMode(backLeft, OUTPUT);
+ pinMode(frontR1, OUTPUT);
+ pinMode(frontR2, OUTPUT);
+ pinMode(frontL1, OUTPUT);
+ pinMode(frontL2, OUTPUT);
+ pinMode(backR1, OUTPUT);
+ pinMode(backR2, OUTPUT);
+ pinMode(backL1, OUTPUT);
+ pinMode(backL2, OUTPUT);
 
  Serial.begin(9600);
-
- 
 }
 
 void loop()
@@ -78,17 +76,15 @@ void loop()
     checkoutTime = currentTime;
    }*/
 
-   //Testing
+   //Test sending distances
     while (Serial.available()){
-     char a = Serial.read(); // Read incoming character
-    
-     if (a = 'd') { 
+     bool a = Serial.read(); // Read incoming character
+     if (a) { 
         sendDistance();
         PrintTx();
      }
     }
-
-
+    
 }
 
 // performAction - Reads the incoming message and performs the necessary action
@@ -116,6 +112,8 @@ void performAction(){
     Serial.println("Escape");
   }
   else if (RxMessage == 48){ // Send Distance
+    sendDistance();
+    Serial.println("Send Distance");
   }
 }
 
@@ -224,6 +222,8 @@ void sendDistance(){
   dis[6]= L7.distance();
   */
 
+  //Convert the distances to 8-bit binary numbers and store them in TxSignal Array
+  //TxSingal = dis1,dis2,dis3,dis5,dis5,dis6,dis7
   int k = TxLength - 1;
   for(int i=6; i >= 0; i--){
     for(int j=0; j < 8; j++){
@@ -232,6 +232,9 @@ void sendDistance(){
       k--;
     }
   }
+  
+  //Send the bits stored in TxSignal
+  sendMessage();
  return;
 }
 
@@ -290,4 +293,5 @@ void PrintTx(){
       }
     Serial.print(" ");
   }
+  return;
 }
