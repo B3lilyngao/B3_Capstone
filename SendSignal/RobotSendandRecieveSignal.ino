@@ -79,19 +79,14 @@ void loop()
    }*/
 
    //Testing
-     while (Serial.available()){
-    char a = Serial.read(); // Read incoming character
+    while (Serial.available()){
+     char a = Serial.read(); // Read incoming character
     
-    switch (a) { 
-      case ('F'):
+     if (a = 'd') { 
         sendDistance();
         PrintTx();
-        break;
-      case ('B'):
-        
-        break;
+     }
     }
-  }
 
 
 }
