@@ -19,7 +19,7 @@ SharpIR L7(LS7, model);
 const int headerLength = 8;
 bool header [headerLength] = {1,0,1,1,0,0,1,0}; 
 
-const int RxLength = 14;
+const int RxLength = 16;
 bool RxSignal [RxLength];
 
 const int TxLength = 56;
@@ -78,8 +78,8 @@ void loop()
 
    //Test sending distances
     while (Serial.available()){
-     bool a = Serial.read(); // Read incoming character
-     if (a) { 
+     char a = Serial.read(); // Read incoming character
+     if (a=='x') { 
         sendDistance();
         PrintTx();
      }
@@ -91,27 +91,27 @@ void loop()
 void performAction(){
   
   int RxMessage = RxInteger();
-  if (RxMessage == 8){ // Forward
+  if (RxMessage == 4){ // Forward
     moveForward();
     Serial.println("Forward");
   }
-  else if (RxMessage == 16){ // Backwards
+  else if (RxMessage == 5){ // Backwards
     moveBack();
     Serial.println("Backward");
   }
-  else if (RxMessage == 24){ // Left
+  else if (RxMessage == 6){ // Left
     turnLeft();
     Serial.println("Left");
   }
-  else if (RxMessage == 32){ // Right
+  else if (RxMessage == 7){ // Right
     turnRight();
     Serial.println("Right");
   }
-  else if (RxMessage == 40){ // Escape
+  else if (RxMessage == 8){ // Escape
     Escape();
     Serial.println("Escape");
   }
-  else if (RxMessage == 48){ // Send Distance
+  else if (RxMessage == 9){ // Send Distance
     sendDistance();
     Serial.println("Send Distance");
   }
@@ -210,7 +210,7 @@ void Escape(){
 
 //sendDistance - measure distance using sensor inputs
 void sendDistance(){
-  int dis[7]= {0,1,2,4,8,16,80};
+  int dis[7]= {51,64,77,88,90,120,5};
 
   /*
   dis[0]= L1.distance();
@@ -245,7 +245,7 @@ void sendMessage(){
     delay(period);
     }
   
-  for (int i = headerLength; i < TxLength; i++){
+  for (int i = 0; i < TxLength; i++){
     digitalWrite(Tx, TxSignal[i]);
     delay(period);
     }
