@@ -23,6 +23,7 @@ void setup() {
 void loop() {
 
   //Read Rx input once every period
+  currentTime =millis();
   if(currentTime >= (previousTime + period)){
     previousTime = currentTime;
     appendSignal(digitalRead(Rx));
@@ -100,7 +101,7 @@ void appendSignal(bool RxNewBit){
 int RxInteger(int startIndex, int stopIndex){
   int decimal = 0;
   for(int i = startIndex; i <= stopIndex; i++){
-    decimal = (decimal*2) + RxSignal[i + startIndex];
+    decimal = (decimal*2) + RxSignal[i];
     }
   return decimal;
 }
@@ -121,10 +122,11 @@ void getDistances(){
   int startIndex = headerLength + (i*8);
   int stopIndex = startIndex + 7;
   distances[i]= RxInteger(startIndex,stopIndex);
-  Serial.println("Distance ");
+  Serial.print("Distance");
   Serial.print(i);
   Serial.print(" = ");
   Serial.print(distances[i]);
+  Serial.println("");
   }
 }
 
