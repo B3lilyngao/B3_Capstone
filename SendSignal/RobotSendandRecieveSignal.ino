@@ -7,17 +7,8 @@
 #define LS5 A4
 #define LS6 A5
 #define LS7 A6
-
 #define model 1080
-// If get wireless signal:
-// 11-001-000 move forward, i.e. moveForward()
-// 11-010-000 move backward, i.e. moveBackward()
-// 11-011-000 move left, i.e. moveLeft()
-// 11-100-000 move right, i.e. moveRight()
-// 11-101-000 return along escape path, i.e. Escape()
-// 11-110-000 transmit sensor data, i.e. sendDistance()
 
-// Transmit distance sensor values once after every move, i.e. sendDistance()
 SharpIR L1(LS1, model);
 SharpIR L2(LS2, model);
 SharpIR L3(LS3, model);
@@ -25,7 +16,8 @@ SharpIR L4(LS4, model);
 SharpIR L5(LS5, model);
 SharpIR L6(LS6, model);
 SharpIR L7(LS7, model);
-// All transmissions are 8-bit, starting with header
+
+// All Rx are 8-bit, starting with header
 const int headerLength = 8;
 bool header [headerLength] = {1,0,1,1,0,0,1,0}; 
 
@@ -34,18 +26,20 @@ bool RxSignal [RxLength];
 
 const int TxLength = 56;
 bool TxSignal [TxLength];
-
+ 
 unsigned long checkoutTime = millis();
 unsigned long currentTime;
 unsigned long previousTime = millis();
 int period = 10;
 
-
-// *Parshva - Make pins for distance sensors here
-int frontRight(2),frontRightb(3), frontLeft(4),frontLeftB(5), backRight(6),backRightb(7), backLeft(8),backLeftb(9); // Wheels
-int Rx(11), Tx(12); // Antennas
-char pastMoves[20]; // Assuming a maximum of 20 moves stored
+// Define wheel pins
+int frontR1(2),frontR2(3), frontL1(4),frontL2(5), backR1(6),backR2(7), backL1(8),backL2(9); 
+// Define pins for reception and transmission
+int Rx(11), Tx(12);
+// Array to store previous moves so the robot can backtrack
+char pastMoves[20];
 int pastMoveCount = 0;
+// 
 unsigned long startTime; // Timeout timer variable, to be set in the performAction function
 
 void setup()
@@ -65,7 +59,7 @@ void setup()
 void loop()
 {
   currentTime = millis();
-  
+  //Read Rx input once every period
   if(currentTime >= (previousTime + period)){
     previousTime = currentTime;
     appendSignal(digitalRead(Rx));
@@ -130,14 +124,27 @@ void performAction(){
   }
 }
 
+//Turn all wheels off
+void wheelsOff(){
+  digitalWrite(frontR1, LOW);
+  digitalWrite(frontR2, LOW);
+  digitalWrite(frontL1, LOW);
+  digitalWrite(frontL2, LOW);
+  digitalWrite(backR1, LOW);
+  digitalWrite(backR2, LOW);
+  digitalWrite(backL1, LOW);
+  digitalWrite(backL2, LOW);
+}
+
 //moveForward - Moves the robot forward, saves move, sends distance
 void moveForward(){
-  digitalWrite(frontRight, HIGH);
-  digitalWrite(frontLeft, HIGH);
+  digitalWrite(frontR1, HIGH);
+  digitalWrite(frontL1, HIGH);
+  digitalWrite(backR1, HIGH);
+  digitalWrite(backL1, HIGH);
   
   delay(500);
-  digitalWrite(frontRight, LOW);
-  digitalWrite(frontLeft, LOW);
+  wheelsOff();
   
   pastMoves[pastMoveCount] = 'b';
   pastMoveCount++;
@@ -145,12 +152,13 @@ void moveForward(){
 
 //moveBack - Moves the robot backwards, saves move, sends distance
 void  moveBack(){
-  digitalWrite(backRight, HIGH);
-  digitalWrite(backLeft, HIGH);
+  digitalWrite(frontR2, HIGH);
+  digitalWrite(frontL2, HIGH);
+  digitalWrite(backR2, HIGH);
+  digitalWrite(backL2, HIGH);
   
   delay(500);
-  digitalWrite(backRight, LOW);
-  digitalWrite(backLeft, LOW);
+  wheelsOff();
   
   pastMoves[pastMoveCount] = 'f';
   pastMoveCount++;
@@ -158,12 +166,13 @@ void  moveBack(){
 
 //turnLeft - Turnes the robot left, saves move, sends distance
 void turnLeft (){
-  digitalWrite(frontRight, HIGH);
-  digitalWrite(backLeft, HIGH);
+  digitalWrite(frontR2, HIGH);
+  digitalWrite(frontL1, HIGH);
+  digitalWrite(backR2, HIGH);
+  digitalWrite(backL1, HIGH);
 
   delay(500);
-  digitalWrite(frontRight, LOW);
-  digitalWrite(backLeft, LOW);
+  wheelsOff();
   
   pastMoves[pastMoveCount] = 'r';
   pastMoveCount++;
@@ -171,12 +180,13 @@ void turnLeft (){
 
 //turnRight - Turns the robot right, saves move, sends distance
 void turnRight (){
-  digitalWrite(frontLeft, HIGH);
-  digitalWrite(backRight, HIGH);
+  digitalWrite(frontR1, HIGH);
+  digitalWrite(frontL2, HIGH);
+  digitalWrite(backR1, HIGH);
+  digitalWrite(backL2, HIGH);
 
-  delay(100);
-  digitalWrite(frontLeft, LOW);
-  digitalWrite(backRight, LOW);
+  delay(500);
+  wheelsOff();
 
   pastMoves[pastMoveCount] = 'l';
   pastMoveCount++;
