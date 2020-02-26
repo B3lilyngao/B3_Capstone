@@ -136,7 +136,7 @@ void moveForward(){
   digitalWrite(backR1, HIGH);
   digitalWrite(backL1, HIGH);
   
-  delay(500);
+  delay(200);
   wheelsOff();
   
   pastMoves[pastMoveCount] = 'b';
@@ -150,7 +150,7 @@ void  moveBack(){
   digitalWrite(backR2, HIGH);
   digitalWrite(backL2, HIGH);
   
-  delay(500);
+  delay(200);
   wheelsOff();
   
   pastMoves[pastMoveCount] = 'f';
@@ -164,7 +164,7 @@ void turnLeft (){
   digitalWrite(backR2, HIGH);
   digitalWrite(backL1, HIGH);
 
-  delay(500);
+  delay(100);
   wheelsOff();
   
   pastMoves[pastMoveCount] = 'r';
@@ -178,7 +178,7 @@ void turnRight (){
   digitalWrite(backR1, HIGH);
   digitalWrite(backL2, HIGH);
 
-  delay(500);
+  delay(100);
   wheelsOff();
 
   pastMoves[pastMoveCount] = 'l';
