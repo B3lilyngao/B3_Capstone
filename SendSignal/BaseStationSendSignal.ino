@@ -1,12 +1,12 @@
 int Rx(11), Tx(12); // Antennas
 // All messages are 8-bits with header bits attached to the front
-const int period = 10;
+const int period = 100;
 unsigned long currentTime;
 unsigned long previousTime = millis();
 
-const int headerLength = 8;
+const int headerLength = 12;
 const int TxLength = 8;
-bool header[headerLength] = {1,0,1,1,0,0,1,0};
+bool header[headerLength] = {1,1,1,1,1,1,1,1,0,1,0,1};
 
 const int RxLength = 56 + headerLength;
 bool RxSignal [RxLength];
