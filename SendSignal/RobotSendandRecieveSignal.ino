@@ -17,21 +17,21 @@ SharpIR L7(LS7, model);
 
 // Rx signal is read after reciving the header
 const int headerLength = 8;
-bool header [headerLength] = {1,0,1,1,0,0,1,0}; 
+bool header [headerLength] = {1, 0, 1, 1, 0, 0, 1, 0};
 
 const int RxLength = 16;
 bool RxSignal [RxLength];
 
 const int TxLength = 56;
 bool TxSignal [TxLength];
- 
+
 unsigned long checkoutTime = millis();
 unsigned long currentTime;
 unsigned long previousTime = millis();
 int period = 10;
 
 // Define wheel pins
-int frontR1(2),frontR2(3), frontL1(4),frontL2(5), backR1(6),backR2(7), backL1(8),backL2(9); 
+int frontR1(2), frontR2(3), frontL1(4), frontL2(5), backR1(6), backR2(7), backL1(8), backL2(9);
 // Define pins for reception and transmission
 int Rx(11), Tx(12);
 // Array to store previous moves so the robot can backtrack
@@ -40,85 +40,85 @@ int pastMoveCount = 0;
 
 void setup()
 {
- pinMode(Rx, INPUT); // Rx pin
- pinMode(Tx, OUTPUT); // Tx pin
- pinMode(frontR1, OUTPUT);
- pinMode(frontR2, OUTPUT);
- pinMode(frontL1, OUTPUT);
- pinMode(frontL2, OUTPUT);
- pinMode(backR1, OUTPUT);
- pinMode(backR2, OUTPUT);
- pinMode(backL1, OUTPUT);
- pinMode(backL2, OUTPUT);
+  pinMode(Rx, INPUT); // Rx pin
+  pinMode(Tx, OUTPUT); // Tx pin
+  pinMode(frontR1, OUTPUT);
+  pinMode(frontR2, OUTPUT);
+  pinMode(frontL1, OUTPUT);
+  pinMode(frontL2, OUTPUT);
+  pinMode(backR1, OUTPUT);
+  pinMode(backR2, OUTPUT);
+  pinMode(backL1, OUTPUT);
+  pinMode(backL2, OUTPUT);
 
- Serial.begin(9600);
+  Serial.begin(9600);
 }
 
 void loop()
 {
   currentTime = millis();
   //Read Rx input once every period
-  if(currentTime >= (previousTime + period)){
+  if (currentTime >= (previousTime + period)) {
     previousTime = currentTime;
     appendSignal(digitalRead(Rx));
-    
-    if(checkHeader()){
+
+    if (checkHeader()) {
       Serial.println(" -header ");
       performAction();
       checkoutTime = currentTime;
       sendDistance();
-      }
+    }
   }
 
   /*if(currentTime > (checkoutTime + 30000)){
     Escape();
     sendDistance();
     checkoutTime = currentTime;
-   }*/
+    }*/
 
-   //Test sending distances
-    while (Serial.available()){
-     char a = Serial.read(); // Read incoming character
-     if (a=='x') { 
-        sendDistance();
-        PrintTx();
-     }
+  //Test sending distances
+  while (Serial.available()) {
+    char a = Serial.read(); // Read incoming character
+    if (a == 'x') {
+      sendDistance();
+      PrintTx();
     }
-    
+  }
+
 }
 
 // performAction - Reads the incoming message and performs the necessary action
-void performAction(){
-  
+void performAction() {
+
   int RxMessage = RxInteger();
-  if (RxMessage == 4){ // Forward
+  if (RxMessage == 4) { // Forward
     moveForward();
     Serial.println("Forward");
   }
-  else if (RxMessage == 5){ // Backwards
+  else if (RxMessage == 5) { // Backwards
     moveBack();
     Serial.println("Backward");
   }
-  else if (RxMessage == 6){ // Left
+  else if (RxMessage == 6) { // Left
     turnLeft();
     Serial.println("Left");
   }
-  else if (RxMessage == 7){ // Right
+  else if (RxMessage == 7) { // Right
     turnRight();
     Serial.println("Right");
   }
-  else if (RxMessage == 8){ // Escape
+  else if (RxMessage == 8) { // Escape
     Escape();
     Serial.println("Escape");
   }
-  else if (RxMessage == 9){ // Send Distance
+  else if (RxMessage == 9) { // Send Distance
     sendDistance();
     Serial.println("Send Distance");
   }
 }
 
 //Turn all wheels off
-void wheelsOff(){
+void wheelsOff() {
   digitalWrite(frontR1, LOW);
   digitalWrite(frontR2, LOW);
   digitalWrite(frontL1, LOW);
@@ -130,55 +130,55 @@ void wheelsOff(){
 }
 
 //moveForward - Moves the robot forward, saves move, sends distance
-void moveForward(){
+void moveForward() {
   digitalWrite(frontR1, HIGH);
   digitalWrite(frontL1, HIGH);
   digitalWrite(backR1, HIGH);
   digitalWrite(backL1, HIGH);
-  
-  delay(200);
+
+  delay(500);
   wheelsOff();
-  
+
   pastMoves[pastMoveCount] = 'b';
   pastMoveCount++;
 }
 
 //moveBack - Moves the robot backwards, saves move, sends distance
-void  moveBack(){
+void  moveBack() {
   digitalWrite(frontR2, HIGH);
   digitalWrite(frontL2, HIGH);
   digitalWrite(backR2, HIGH);
   digitalWrite(backL2, HIGH);
-  
-  delay(200);
+
+  delay(500);
   wheelsOff();
-  
+
   pastMoves[pastMoveCount] = 'f';
   pastMoveCount++;
 }
 
 //turnLeft - Turnes the robot left, saves move, sends distance
-void turnLeft (){
+void turnLeft () {
   digitalWrite(frontR2, HIGH);
   digitalWrite(frontL1, HIGH);
   digitalWrite(backR2, HIGH);
   digitalWrite(backL1, HIGH);
 
-  delay(100);
+  delay(500);
   wheelsOff();
-  
+
   pastMoves[pastMoveCount] = 'r';
   pastMoveCount++;
 }
 
 //turnRight - Turns the robot right, saves move, sends distance
-void turnRight (){
+void turnRight () {
   digitalWrite(frontR1, HIGH);
   digitalWrite(frontL2, HIGH);
   digitalWrite(backR1, HIGH);
   digitalWrite(backL2, HIGH);
 
-  delay(100);
+  delay(500);
   wheelsOff();
 
   pastMoves[pastMoveCount] = 'l';
@@ -186,22 +186,22 @@ void turnRight (){
 }
 
 //Escape - Iterates through saved escape route (pastMoves)and moves the robot accordingly
-void Escape(){
-  for (int i = pastMoveCount; i >= 0; i--){
+void Escape() {
+  for (int i = pastMoveCount; i >= 0; i--) {
     char m = pastMoves[i];
-    switch (m){
+    switch (m) {
       case ('f'): // Forward
-         moveForward();
-         break;
-       case ('b'): // Backward
-         moveBack();
-         break;
-       case ('l'): // Left
-         turnLeft();
-         break;
-       case ('r'): // Right
-         turnRight();
-         break;
+        moveForward();
+        break;
+      case ('b'): // Backward
+        moveBack();
+        break;
+      case ('l'): // Left
+        turnLeft();
+        break;
+      case ('r'): // Right
+        turnRight();
+        break;
     }
     // *To Add - Pause, then if NoACK, Continue
   }
@@ -209,55 +209,62 @@ void Escape(){
 }
 
 //sendDistance - measure distance using sensor inputs
-void sendDistance(){
-  int dis[7]= {51,64,77,88,90,120,5};
+void sendDistance() {
+  int dis[7] = {0, 0, 0, 0, 0, 0, 0};
 
+  dis[0] = L1.distance();
   /*
-  dis[0]= L1.distance();
-  dis[1]= L2.distance();
-  dis[2]= L3.distance();
-  dis[3]= L4.distance();
-  dis[4]= L5.distance();
-  dis[5]= L6.distance();
-  dis[6]= L7.distance();
+    dis[1]= L2.distance();
+    dis[2]= L3.distance();
+    dis[3]= L4.distance();
+    dis[4]= L5.distance();
+    dis[5]= L6.distance();
+    dis[6]= L7.distance();
   */
+  for (int i = 0; i < 7; i++) {
+    Serial.print("Distance");
+    Serial.print(i);
+    Serial.print(" = ");
+    Serial.print(dis[i]);
+    Serial.println("");
+  }
 
   //Convert the distances to 8-bit binary numbers and store them in TxSignal Array
   //TxSingal = dis1,dis2,dis3,dis5,dis5,dis6,dis7
   int k = TxLength - 1;
-  for(int i=6; i >= 0; i--){
-    for(int j=0; j < 8; j++){
-      TxSignal[k] = dis[i]%2;
-      dis[i] = dis[i]/2;
+  for (int i = 6; i >= 0; i--) {
+    for (int j = 0; j < 8; j++) {
+      TxSignal[k] = dis[i] % 2;
+      dis[i] = dis[i] / 2;
       k--;
     }
   }
-  
+
   //Send the bits stored in TxSignal
   sendMessage();
- return;
+  return;
 }
 
 // sendMessage - Send an array of bits
-void sendMessage(){  
-  for(int i =0;i < headerLength; i++){
+void sendMessage() {
+  for (int i = 0; i < headerLength; i++) {
     digitalWrite(Tx, header[i]);
     delay(period);
-    }
-  
-  for (int i = 0; i < TxLength; i++){
+  }
+
+  for (int i = 0; i < TxLength; i++) {
     digitalWrite(Tx, TxSignal[i]);
     delay(period);
-    }
-    
+  }
+
   digitalWrite(Tx, 0);
   return;
 }
 
 //checkHeader - Compare recorded Rx bits to the header
-bool checkHeader(){
-  for(int i = 0; i < headerLength; i++){
-    if(RxSignal[i] != header[i]){
+bool checkHeader() {
+  for (int i = 0; i < headerLength; i++) {
+    if (RxSignal[i] != header[i]) {
       return false;
     }
   }
@@ -265,32 +272,32 @@ bool checkHeader(){
 }
 
 //appendSignal - Add new to array of recorded Rx inputs
-void appendSignal(bool RxNewBit){
-  for(int i=0; i < (RxLength - 1); i++){
-    RxSignal[i] = RxSignal[i+1];
+void appendSignal(bool RxNewBit) {
+  for (int i = 0; i < (RxLength - 1); i++) {
+    RxSignal[i] = RxSignal[i + 1];
   }
   RxSignal[RxLength - 1] = RxNewBit;
   return;
 }
 
 //Decode the integer value of the Rx bits after the header
-int RxInteger(){
+int RxInteger() {
   int decimal = 0;
-  for(int i = headerLength; i < RxLength; i++){
-    decimal = (decimal*2) + RxSignal[i];
-    }
+  for (int i = headerLength; i < RxLength; i++) {
+    decimal = (decimal * 2) + RxSignal[i];
+  }
   return decimal;
 }
 
 //(Function For Testing) Print TxSignal
-void PrintTx(){
+void PrintTx() {
   Serial.println("\nSignal:");
-  for(int i=0; i< 7; i++){
-    for(int j=0; j < 8; j++){
-      int index = (8*i)+j;
+  for (int i = 0; i < 7; i++) {
+    for (int j = 0; j < 8; j++) {
+      int index = (8 * i) + j;
       //Serial.print(index);
       Serial.print(TxSignal[index]);
-      }
+    }
     Serial.print(" ");
   }
   return;
